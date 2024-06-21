@@ -66,7 +66,7 @@ jobs:
         # 修改storage大小
         sed -i '/size_etc/s/6M/20M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
         # 512m内存
-        sed -i '/CONFIG_BOARD_RAM_SIZE=128/s/128/512/g'  /opt/rt-n56u/trunk/configs/boards/RM2100/board.mk
+        # sed -i '/CONFIG_BOARD_RAM_SIZE=128/s/128/512/g'  /opt/rt-n56u/trunk/configs/boards/RM2100/board.mk
         #### 替换谷歌dns为腾讯dns #############################################################
         sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
         ######################################################################################
