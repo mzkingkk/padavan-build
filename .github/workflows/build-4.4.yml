@@ -1,16 +1,16 @@
 #修改TNAME: 为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
 name: Build Padavan4.4 RM2100
 
-on: 
+on:
   release:
     types: [published]
   push:
     tags:
-    - 'v*'
-  #  branches: 
+      - "v*"
+  #  branches:
   #    - master
-#  schedule:
-#    - cron: 0 8 * * 5
+  #  schedule:
+  #    - cron: 0 8 * * 5
   watch:
     types: [started]
 
@@ -20,66 +20,69 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@master
-    - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
-        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
-    - name: Clone source code
-      env:
-        KERNEL: 4.4
-      run: |
-        git clone --depth=1 https://github.com/MeIsReallyBa/padavan-4.4.git /opt/rt-n56u
-        cd /opt/rt-n56u/toolchain-mipsel
-        sh dl_toolchain.sh
-        mkdir -p /opt/images/
-    - name: Build Firmware
-      env:
-        TNAME: RM2100
-        KERNEL: 4.4
-      run: |
-        cd /opt/rt-n56u/trunk
-        if [ ! -f configs/templates/$TNAME.config ] ; then
-        echo "configs/templates/$TNAME.config not found "
-        exit 1
-        fi
-        #########################################################################################
-        # 因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
-        #########################################################################################
-        config_path=configs/templates/$TNAME.config
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' $config_path #删除配置项MENTOHUST
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_ENABLE_IPV6=y/CONFIG_FIRMWARE_ENABLE_IPV6=n/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=y/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=n/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_VLMCSD=y/CONFIG_FIRMWARE_INCLUDE_VLMCSD=n/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTOP=y/CONFIG_FIRMWARE_INCLUDE_HTOP=n/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/CONFIG_FIRMWARE_INCLUDE_IPERF3=n/g' $config_path
-        sed -i 's/CONFIG_FIRMWARE_INCLUDE_MTR=y/CONFIG_FIRMWARE_INCLUDE_MTR=n/g' $config_path
-        cp -f $config_path .config
-        cat .config | grep -v "#CONFIG" | grep "=y"
-        # 修改storage大小
-        sed -i '/size_etc/s/6M/20M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
-        # 512m内存
-        # sed -i '/CONFIG_BOARD_RAM_SIZE=128/s/128/512/g'  /opt/rt-n56u/trunk/configs/boards/RM2100/board.mk
-        #### 替换谷歌dns为腾讯dns #############################################################
-        sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
-        ######################################################################################
-        sudo ./clear_tree
-        sudo ./build_firmware_modify $TNAME 0
-        # 文件名带上时间戳
-        file_name=$(ls images/*.trx | head -n 1)
-        file_name=${file_name%.*}
-        current=$(date '+%Y%m%d-%H%M%S')
-        sudo mv -f $file_name.trx /opt/${file_name}-4.4-${current}.trx
-    - name : Upload packages
-      uses: actions/upload-artifact@master
-      if: always()
-      with:
-        name: Padavan-packages
-        path: /opt/images
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
+          cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
+      - name: Clone source code
+        env:
+          KERNEL: 4.4
+        run: |
+          git clone --depth=1 https://github.com/MeIsReallyBa/padavan-4.4.git /opt/rt-n56u
+          cd /opt/rt-n56u/toolchain-mipsel
+          sh dl_toolchain.sh
+          mkdir -p /opt/images/
+      - name: Build Firmware
+        env:
+          TNAME: RM2100
+          KERNEL: 4.4
+        run: |
+          cd /opt/rt-n56u/trunk
+          if [ ! -f configs/templates/$TNAME.config ] ; then
+          echo "configs/templates/$TNAME.config not found "
+          exit 1
+          fi
+          #########################################################################################
+          # 因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
+          #########################################################################################
+          config_path=configs/templates/$TNAME.config
+          sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' $config_path #删除配置项MENTOHUST
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_ENABLE_IPV6=y/CONFIG_FIRMWARE_ENABLE_IPV6=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=y/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_VLMCSD=y/CONFIG_FIRMWARE_INCLUDE_VLMCSD=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTOP=y/CONFIG_FIRMWARE_INCLUDE_HTOP=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/CONFIG_FIRMWARE_INCLUDE_IPERF3=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_MTR=y/CONFIG_FIRMWARE_INCLUDE_MTR=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y/CONFIG_FIRMWARE_INCLUDE_WIREGUARD=n/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_SFTP=n/CONFIG_FIRMWARE_INCLUDE_SFTP=y/g' $config_path
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=n/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=y/g' $config_path
+          cp -f $config_path .config
+          cat .config | grep -v "#CONFIG" | grep "=y"
+          # 修改storage大小
+          sed -i '/size_etc/s/6M/20M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
+          # 512m内存
+          # sed -i '/CONFIG_BOARD_RAM_SIZE=128/s/128/512/g'  /opt/rt-n56u/trunk/configs/boards/RM2100/board.mk
+          #### 替换谷歌dns为腾讯dns #############################################################
+          sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
+          ######################################################################################
+          sudo ./clear_tree
+          sudo ./build_firmware_modify $TNAME 0
+          # 文件名带上时间戳
+          file_name=$(ls images/*.trx | head -n 1)
+          file_name=${file_name%.*}
+          current=$(date '+%Y%m%d-%H%M%S')
+          sudo mv -f $file_name.trx /opt/${file_name}-4.4-${current}.trx
+      - name: Upload packages
+        uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: Padavan-packages
+          path: /opt/images
