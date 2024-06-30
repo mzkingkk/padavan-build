@@ -3,12 +3,12 @@
 set -e
 set -x
 
-TNAME="R2100"
+export TNAME="R2100"
 path="/opt/rt-n56u"
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 up_config(){
-    cd $path/trunk
+    cd ${path}/trunk
     config_path=configs/templates/$TNAME.config
     sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' $config_path #删除配置项MENTOHUST
     sed -i 's/CONFIG_FIRMWARE_ENABLE_IPV6=y/CONFIG_FIRMWARE_ENABLE_IPV6=n/g' $config_path
@@ -40,7 +40,7 @@ up_config(){
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n/g' $config_path
     cp -f $config_path .config
-    cat .config | grep -v "#CONFIG" | grep "=y"
+    cat .config | grep -v "#CONFIG" | grep "=y" > /tmp/build.config
     # 修改storage大小
     sed -i '/size_etc/s/6M/40M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
     #### 替换谷歌dns为腾讯dns
@@ -49,37 +49,37 @@ up_config(){
 
 # 修改默认dns
 fix_dns() {
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/shared/defaults.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/dns-forwarder/dns-forwarder-1.2.1/hev-main.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt7615/embedded/common/cmm_profile.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt76x2/common/cmm_profile.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt76x3/common/cmm_profile.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt7915/embedded/common/cmm_profile.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/dnsmasq/dnsmasq-2.8x/src/option.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/iptables/iptables-1.8.7/extensions/generic.txlate
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/iptables/iptables-1.8.7/extensions/libxt_tcp.txlate
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/iptables/iptables-1.8.7/extensions/libxt_udp.txlate
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/miniupnpd/miniupnpd-2.x/netfilter/testiptcrdr.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/mtr/mtr-0.92/man/mtr-packet.8.in
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/mtr/mtr-0.92/test/cmdparse.py
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/mtr/mtr-0.92/test/probe.py
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/rc/net_wan.c
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/redsocks/redsocks-19b822e/debian/redsocks.conf
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/redsocks/redsocks-19b822e/redsocks.conf.example
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/redsocks/redsocks-19b822e/tests/conftest.py
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/wing/wing
-    sed -i 's/8.8.8.8/119.29.29.29/g' $path/trunk/user/www/n56u_ribbon_fixed/Shadowsocks.asp
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/shared/defaults.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/dns-forwarder/dns-forwarder-1.2.1/hev-main.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt7615/embedded/common/cmm_profile.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt76x2/common/cmm_profile.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt76x3/common/cmm_profile.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/linux-4.4.x/drivers/net/wireless/mediatek/mt7915/embedded/common/cmm_profile.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/dnsmasq/dnsmasq-2.8x/src/option.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/iptables/iptables-1.8.7/extensions/generic.txlate
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/iptables/iptables-1.8.7/extensions/libxt_tcp.txlate
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/iptables/iptables-1.8.7/extensions/libxt_udp.txlate
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/miniupnpd/miniupnpd-2.x/netfilter/testiptcrdr.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/mtr/mtr-0.92/man/mtr-packet.8.in
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/mtr/mtr-0.92/test/cmdparse.py
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/mtr/mtr-0.92/test/probe.py
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/rc/net_wan.c
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/redsocks/redsocks-19b822e/debian/redsocks.conf
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/redsocks/redsocks-19b822e/redsocks.conf.example
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/redsocks/redsocks-19b822e/tests/conftest.py
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/wing/wing
+    sed -i 's/8.8.8.8/119.29.29.29/g' ${path}/trunk/user/www/n56u_ribbon_fixed/Shadowsocks.asp
     
     grep -rn "8\.8\.8\.8" | grep -vE "html|\.md|CHANGELOG" | grep "8\.8\.8\.8"
 }
 
 pre_build(){
-    cd $path/toolchain-mipsel
+    cd ${path}/trunk/toolchain-mipsel
     ./dl_toolchain.sh
 }
 
 do_build(){
-    cd $path/trunk
+    cd ${path}/trunk
     ./build_firmware_modify $TNAME 0
 }
 
@@ -90,11 +90,11 @@ aft_build(){
     echo $end_time
 }
 
-cd $path/trunk
+cd ${path}/trunk
 git checkout .
 git clean -dfx
 
 up_config
-pre_build
-do_build
-aft_build
+# pre_build
+# do_build
+# aft_build
