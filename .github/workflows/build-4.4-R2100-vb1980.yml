@@ -36,7 +36,7 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
           cd /opt/rt-n56u/toolchain-mipsel
-          sh dl_toolchain.sh
+          chmod +x *.sh && sh dl_toolchain.sh
           mkdir -p /opt/images/
       - name: Build Firmware
         env:
