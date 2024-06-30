@@ -81,7 +81,7 @@ jobs:
           cp -f $config_path .config
           cat .config | grep -v "#CONFIG" | grep "=y"
           # 修改storage大小
-          sed -i '/size_etc/s/6M/40M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
+          sed -i '/size_etc/s/6M/60M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
           # 512m内存
           # sed -i '/CONFIG_BOARD_RAM_SIZE=128/s/128/512/g'  /opt/rt-n56u/trunk/configs/boards/R2100/board.mk
           #### 替换谷歌dns为腾讯dns #############################################################
