@@ -9,7 +9,7 @@ start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 up_config(){
     cd ${path}/trunk
-    config_path=configs/templates/$TNAME.config
+    config_path=configs/templates/${TNAME}.config
     sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' $config_path #删除配置项MENTOHUST
     sed -i 's/CONFIG_FIRMWARE_ENABLE_IPV6=y/CONFIG_FIRMWARE_ENABLE_IPV6=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=y/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=n/g' $config_path
@@ -25,20 +25,19 @@ up_config(){
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_NANO=y/CONFIG_FIRMWARE_INCLUDE_NANO=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SOCAT=y/CONFIG_FIRMWARE_INCLUDE_SOCAT=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SRELAY=y/CONFIG_FIRMWARE_INCLUDE_SRELAY=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_MSD_LITE=y/CONFIG_FIRMWARE_INCLUDE_MSD_LITE=n/g' $config_path
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SRELAY=y/CONFIG_FIRMWARE_INCLUDE_SRELAY=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_LRZSZ=y/CONFIG_FIRMWARE_INCLUDE_LRZSZ=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=n/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/g' $config_path
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_DOGCOM=y/CONFIG_FIRMWARE_INCLUDE_DOGCOM=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EC=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EC=y/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=n/g' $config_path
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SFTP=n/CONFIG_FIRMWARE_INCLUDE_SFTP=y/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=n/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=y/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=y/CONFIG_FIRMWARE_INCLUDE_CURL=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' $config_path
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n/g' $config_path
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=n/CONFIG_FIRMWARE_INCLUDE_CURL=y/g' $config_path
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/g' $config_path
+    echo -e 'CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y' >> $config_path
+    echo -e 'CONFIG_FIRMWARE_INCLUDE_XRAY=y' >> $config_path
     cp -f $config_path .config
     cat .config | grep -v "#CONFIG" | grep "=y" > /tmp/build.config
     # 修改storage大小
@@ -74,17 +73,17 @@ fix_dns() {
 }
 
 pre_build(){
-    cd ${path}/trunk/toolchain-mipsel
+    cd ${path}/toolchain-mipsel
     ./dl_toolchain.sh
 }
 
 do_build(){
     cd ${path}/trunk
-    ./build_firmware_modify $TNAME 0
+    ./build_firmware_modify ${TNAME} 0
 }
 
 aft_build(){
-    cp -f /opt/rt-n56u/trunk/images/RM2100*.trx /opt/
+    cp -f /opt/rt-n56u/trunk/images/${TNAME}* /opt/
     end_time=$(date "+%Y-%m-%d %H:%M:%S")
     echo $start_time
     echo $end_time
@@ -95,6 +94,6 @@ git checkout .
 git clean -dfx
 
 up_config
-# pre_build
-# do_build
-# aft_build
+pre_build
+do_build
+aft_build
