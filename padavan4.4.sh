@@ -40,7 +40,7 @@ up_config(){
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' $config_path
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y/CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n/g' $config_path
     cp -f $config_path .config
-    cat .config | grep "=y"
+    cat .config | grep -v "#CONFIG" | grep "=y"
     # 修改storage大小
     sed -i '/size_etc/s/6M/40M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
     #### 替换谷歌dns为腾讯dns
@@ -97,3 +97,4 @@ git clean -dfx
 up_config
 pre_build
 do_build
+aft_build
