@@ -36,7 +36,7 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
           cd /opt/rt-n56u/toolchain-mipsel
-          chmod +x *.sh && sh dl_toolchain.sh
+          chmod +x * && sh dl_toolchain.sh
           mkdir -p /opt/images/
       - name: Build Firmware
         env:
@@ -90,7 +90,7 @@ jobs:
           #### 替换谷歌dns为腾讯dns #############################################################
           sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
           ######################################################################################
-          sudo ./clear_tree
+          chmod +x * && sudo ./clear_tree
           sudo ./build_firmware_modify $TNAME 0
           # 文件名带上时间戳
           file_name=$(ls images/*.trx | head -n 1)
