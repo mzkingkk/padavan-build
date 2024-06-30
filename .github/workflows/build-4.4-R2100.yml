@@ -78,6 +78,9 @@ jobs:
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' $config_path
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=n/CONFIG_FIRMWARE_INCLUDE_CURL=y/g' $config_path
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/g' $config_path
+          echo -e 'CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y' >> $config_path
+          echo -e 'CONFIG_FIRMWARE_INCLUDE_XRAY=y' >> $config_path
+          echo -e 'CONFIG_FIRMWARE_INCLUDE_TROJAN=y' >> $config_path
           cp -f $config_path .config
           cat .config | grep -v "#CONFIG" | grep "=y"
           # 修改storage大小
