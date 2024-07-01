@@ -29,7 +29,14 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
           cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
+          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
+
+          cd /opt
+          wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
+          tar -C /usr/local -zxvf go1.22.4.linux-amd64.tar.gz
+          rm -rf go1.22.4.linux-amd64.tar.gz
+          echo -e 'export GOROOT=/usr/local/go'>> /etc/profile
+          echo -e 'export PATH=$PATH:$GOROOT/bin'>> /etc/profile
       - name: Clone source code
         env:
           KERNEL: 4.4
@@ -43,6 +50,7 @@ jobs:
           TNAME: R2100
           KERNEL: 4.4
         run: |
+          source /etc/profile
           cd /opt/rt-n56u/trunk
           if [ ! -f configs/templates/$TNAME.config ] ; then
             echo "configs/templates/$TNAME.config not found "
@@ -77,7 +85,7 @@ jobs:
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' ${config_path}
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=y/CONFIG_FIRMWARE_INCLUDE_CURL=n/g' ${config_path}
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=n/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/g' ${config_path}
-          sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/g' ${config_path}
+          sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/g' ${config_path}
           echo -e 'CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y' >>${config_path}
           echo -e 'CONFIG_FIRMWARE_INCLUDE_XRAY=y' >>${config_path}
           cp -f ${config_path} .config
@@ -96,6 +104,7 @@ jobs:
           file_name=${file_name%.*}
           current=$(date '+%Y%m%d-%H%M%S')
           sudo mv -f $file_name.trx /opt/${file_name}-4.4-${current}.trx
+          cat .config | grep -v "#CONFIG" | grep "=y"
       - name: Upload packages
         uses: actions/upload-artifact@master
         if: always()

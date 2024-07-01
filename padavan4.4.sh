@@ -7,6 +7,26 @@ export TNAME="R2100"
 path="/opt/rt-n56u"
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
+function pre_install_rpm() {
+    sudo apt-get update
+    sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
+        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
+}
+
+function pre_install_golang() {
+    if [[ ! -f /usr/local/go/bin/go ]]; then
+        cd /opt
+        wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
+        tar -C /usr/local -zxvf go1.22.4.linux-amd64.tar.gz
+        rm -rf go1.22.4.linux-amd64.tar.gz
+        sed -i '/GOROOT/d' /etc/profile
+        echo -e 'export GOROOT=/usr/local/go' >>/etc/profile
+        echo -e 'export PATH=$PATH:$GOROOT/bin' >>/etc/profile
+        source /etc/profile
+    fi
+}
+
 function up_config() {
     cd ${path}/trunk
     config_path=configs/templates/${TNAME}.config
@@ -35,7 +55,7 @@ function up_config() {
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=y/CONFIG_FIRMWARE_INCLUDE_CURL=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=n/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/g' ${config_path}
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/g' ${config_path}
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/g' ${config_path}
     echo -e 'CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y' >>${config_path}
     echo -e 'CONFIG_FIRMWARE_INCLUDE_XRAY=y' >>${config_path}
     cp -f ${config_path} .config
@@ -71,6 +91,8 @@ function git_clean() {
     git status
 }
 
+pre_install_rpm
+pre_install_golang
 git_clean
 up_config
 pre_build
