@@ -9,8 +9,8 @@ start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 function pre_install_rpm() {
     sudo apt-get update
-    sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
-        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+    sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
+        cpio python-docutils gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
         bc libssl-dev
 }
