@@ -1,0 +1,46 @@
+name: toolchain
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target: [mipsel-linux-uclibc, mipsel-linux-musl]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare
+        run: |
+          sudo apt update
+          sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+            fakeroot kmod cpio git python3-docutils gettext automake autopoint \
+            texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
+            libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+      - name: Clone source code
+        env:
+          KERNEL: 4.4
+        run: |
+          git clone --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
+      - name: Build
+        env:
+          CT_TARGET: ${{ matrix.target }}
+          CT_VERSION: 1.26.0
+        run: |
+          cd /opt/rt-n56u
+          make CT_TARGET=${CT_TARGET} CT_VERSION=${CT_VERSION}
+          cd crosstool-ng-${CT_VERSION}/toolchain-mipsel
+          tar cJf ../../${CT_TARGET}.tar.xz *
+        working-directory: toolchain
+      - uses: actions/upload-artifact@v3
+        with:
+          name: toolchain
+          path: toolchain/${{ matrix.target }}.tar.xz
+      - uses: svenstaro/upload-release-action@2.2.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: toolchain/${{ matrix.target }}.tar.xz
+          tag: toolchain
+          overwrite: true
