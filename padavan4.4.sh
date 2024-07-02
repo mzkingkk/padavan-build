@@ -11,7 +11,8 @@ function pre_install_rpm() {
     sudo apt-get update
     sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
+        bc libssl-dev
 }
 
 function pre_install_golang() {
@@ -24,6 +25,7 @@ function pre_install_golang() {
         echo -e 'export GOROOT=/usr/local/go' >>/etc/profile
         echo -e 'export PATH=$PATH:$GOROOT/bin' >>/etc/profile
         source /etc/profile
+        go env -w GOPROXY=https://goproxy.cn,direct
     fi
 }
 
@@ -84,9 +86,9 @@ function aft_build() {
 }
 
 function git_clean() {
-    cd ${path}
-    git checkout .
-    git reset .
+    cd ${path}/trunk
+    git restore --staged ./
+    git checkout ./
     git clean -dfx
     git status
 }
