@@ -28,16 +28,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
-          cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
-
-          cd /opt
-          wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
-          tar -C /usr/local -zxf go1.22.4.linux-amd64.tar.gz
-          rm -rf go1.22.4.linux-amd64.tar.gz
-          sed -i '/GOROOT/d' /etc/profile
-          echo -e 'export GOROOT=/usr/local/go'>> /etc/profile
-          echo -e 'export PATH=$PATH:$GOROOT/bin'>> /etc/profile
+            cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+            pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
+            bc libssl-dev
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.22.4"
+          check-latest: true
+          cache: false
       - name: Clone source code
         env:
           KERNEL: 4.4
