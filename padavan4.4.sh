@@ -9,8 +9,9 @@ start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 function pre_install_rpm() {
     sudo apt-get update
+    # python-docutils 是推荐安装的以来，但测试了几台机器没这个包，就默认不装了
     sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
-        cpio python-docutils gettext automake autopoint texinfo build-essential help2man \
+        cpio gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
         bc libssl-dev
 }
@@ -63,7 +64,7 @@ function up_config() {
     cp -f ${config_path} .config
     cat .config | grep -v "#CONFIG" | grep "=y" >/tmp/build.config
     # 修改storage大小
-    sed -i '/size_etc/s/6M/40M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
+    sed -i '/size_etc/s/6M/60M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
     #### 替换谷歌dns为腾讯dns
     sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
 }
