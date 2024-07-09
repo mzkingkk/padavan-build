@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-
 set -e
 set -x
 
@@ -9,7 +8,7 @@ start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 function pre_install_rpm() {
     sudo apt-get update
-    # python-docutils 是推荐安装的以来，但测试了几台机器没这个包，就默认不装了
+    # python-docutils 是推荐安装的依赖，但测试了几台机器没这个包，就默认不装了
     sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
         cpio gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
@@ -34,6 +33,7 @@ function up_config() {
     cd ${path}/trunk
     config_path=configs/templates/${TNAME}.config
     sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' ${config_path} #删除配置项MENTOHUST
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_MSD_LITE=y/CONFIG_FIRMWARE_INCLUDE_MSD_LITE=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_ENABLE_IPV6=y/CONFIG_FIRMWARE_ENABLE_IPV6=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=y/CONFIG_FIRMWARE_INCLUDE_EAP_PEAP=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_VLMCSD=y/CONFIG_FIRMWARE_INCLUDE_VLMCSD=n/g' ${config_path}
@@ -59,8 +59,9 @@ function up_config() {
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=y/CONFIG_FIRMWARE_INCLUDE_CURL=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=n/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=y/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/g' ${config_path}
-    echo -e 'CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y' >>${config_path}
-    echo -e 'CONFIG_FIRMWARE_INCLUDE_XRAY=y' >>${config_path}
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/g' ${config_path}
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_XRAY=n/CONFIG_FIRMWARE_INCLUDE_XRAY=y/g' ${config_path}
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' ${config_path}
     cp -f ${config_path} .config
     cat .config | grep -v "#CONFIG" | grep "=y" >/tmp/build.config
     # 修改storage大小
@@ -94,7 +95,7 @@ function git_clean() {
     git status
 }
 
-# pre_install_rpm
+pre_install_rpm
 pre_install_golang
 git_clean
 up_config
