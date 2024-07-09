@@ -42,8 +42,6 @@ jobs:
         with:
           install-only: true
       - name: Clone Source Code
-        env:
-          KERNEL: 4.4
         run: |
           git clone --depth=1 https://github.com/mzkingkk/padavan-4.4.git /opt/rt-n56u
           cd /opt/rt-n56u/toolchain-mipsel
@@ -52,14 +50,9 @@ jobs:
       - name: Build Firmware
         env:
           TNAME: R2100
-          KERNEL: 4.4
         run: |
           source /etc/profile
           cd /opt/rt-n56u/trunk
-          if [ ! -f configs/templates/$TNAME.config ] ; then
-            echo "configs/templates/$TNAME.config not found "
-            exit 1
-          fi
           #########################################################################################
           # 因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
           #########################################################################################
