@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: Clone source code
         run: |
-          git clone --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
-          git clone --depth=1 -b vb1980_fix https://github.com/mzkingkk/padavan-4.4.git /opt/vb1980_fix
+          git clone --single-branch --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
+          git clone --single-branch --depth=1 -b vb1980_fix https://github.com/mzkingkk/padavan-4.4.git /opt/vb1980_fix
           chmod +x /opt/vb1980_fix
           sh /opt/vb1980_fix/fix.sh
       - uses: actions/setup-go@v4
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.toolchain }}
-          path: trunk/images/*.trx
+          path: /opt/rt-n56u/trunk/images/*.trx
   publish:
     needs: [build]
     runs-on: ubuntu-22.04
