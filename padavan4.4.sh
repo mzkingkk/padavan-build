@@ -54,7 +54,7 @@ function up_config() {
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_DOGCOM=y/CONFIG_FIRMWARE_INCLUDE_DOGCOM=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EC=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EC=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=n/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y/g' ${config_path}
-    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SFTP=n/CONFIG_FIRMWARE_INCLUDE_SFTP=y/g' ${config_path}
+    sed -i 's/CONFIG_FIRMWARE_INCLUDE_SFTP=y/CONFIG_FIRMWARE_INCLUDE_SFTP=n/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=n/CONFIG_FIRMWARE_INCLUDE_TCPDUMP=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTTPS=n/CONFIG_FIRMWARE_INCLUDE_HTTPS=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=y/CONFIG_FIRMWARE_INCLUDE_CURL=n/g' ${config_path}
@@ -84,6 +84,7 @@ function do_build() {
     if [[ -f ./build_firmware_modify ]]; then
         ./build_firmware_modify ${TNAME} 0
     else
+        cd ..
         make ${TNAME}
     fi
 }
