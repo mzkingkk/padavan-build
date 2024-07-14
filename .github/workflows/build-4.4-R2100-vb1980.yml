@@ -23,12 +23,19 @@ jobs:
     steps:
       - name: Clone source code
         run: |
-          git clone --depth=1 -b vb1980 https://github.com/mzkingkk/padavan-4.4.git /opt/rt-n56u
+          git clone --depth=1 https://github.com/vb1980/padavan-4.4.git /opt/rt-n56u
+          git clone --depth=1 -b vb1980_fix https://github.com/mzkingkk/padavan-4.4.git /opt/vb1980_fix
+          chmod +x /opt/vb1980_fix
+          sh /opt/vb1980_fix/fix.sh
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.22.0"
+          go-version: "1.22.4"
           check-latest: true
           cache: false
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -79,6 +86,7 @@ jobs:
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/g' ${config_path}
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_XRAY=n/CONFIG_FIRMWARE_INCLUDE_XRAY=y/g' ${config_path}
           sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' ${config_path}
+          sed -i '/CONFIG_FIRMWARE_MT7621_OC/s/0x312/0x362/g' ${config_path}
           cp -f ${config_path} .config
           cat .config | grep -v "#CONFIG" | grep "=y"
           # 修改storage大小

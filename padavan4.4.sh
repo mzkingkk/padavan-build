@@ -3,16 +3,17 @@ set -e
 set -x
 
 export TNAME="R2100"
-path="/opt/rt-n56u"
+path=$(pwd)
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 function pre_install_rpm() {
-    sudo apt-get update
+    echo "start to install package"
+    sudo apt-get update >/dev/null
     # python-docutils 是推荐安装的依赖，但测试了几台机器没这个包，就默认不装了
     sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
         cpio gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
-        bc libssl-dev
+        bc libssl-dev >/dev/null
 }
 
 function pre_install_golang() {
@@ -62,26 +63,33 @@ function up_config() {
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_XRAY=n/CONFIG_FIRMWARE_INCLUDE_XRAY=y/g' ${config_path}
     sed -i 's/CONFIG_FIRMWARE_INCLUDE_TROJAN=y/CONFIG_FIRMWARE_INCLUDE_TROJAN=n/g' ${config_path}
+    sed -i '/CONFIG_FIRMWARE_MT7621_OC/s/0x312/0x362/g' ${config_path}
     cp -f ${config_path} .config
     cat .config | grep -v "#CONFIG" | grep "=y" >/tmp/build.config
     # 修改storage大小
-    sed -i '/size_etc/s/6M/60M/g' /opt/rt-n56u/trunk/user/scripts/dev_init.sh
+    sed -i '/size_etc/s/6M/60M/g' user/scripts/dev_init.sh
     #### 替换谷歌dns为腾讯dns
-    sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' /opt/rt-n56u/trunk/user/rc/net_wan.c
+    sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' user/rc/net_wan.c
 }
 
 function pre_build() {
-    cd ${path}/toolchain-mipsel
-    ./dl_toolchain.sh
+    if [[ -f ${path}/toolchain-mipsel/dl_toolchain.sh ]]; then
+        cd ${path}/toolchain-mipsel
+        ./dl_toolchain.sh
+    fi
 }
 
 function do_build() {
     cd ${path}/trunk
-    ./build_firmware_modify ${TNAME} 0
+    if [[ -f ./build_firmware_modify ]]; then
+        ./build_firmware_modify ${TNAME} 0
+    else
+        make ${TNAME}
+    fi
 }
 
 function aft_build() {
-    cp -f /opt/rt-n56u/trunk/images/${TNAME}* /opt/
+    cp -f ${path}/trunk/images/${TNAME}* /opt/
     end_time=$(date "+%Y-%m-%d %H:%M:%S")
     echo $start_time
     echo $end_time
