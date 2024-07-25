@@ -10,7 +10,7 @@ function pre_install_rpm() {
     echo "start to install package"
     sudo apt-get update >/dev/null
     # python-docutils 是推荐安装的依赖，但测试了几台机器没这个包，就默认不装了
-    sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
+    sudo apt-get -y install unzip zip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
         cpio gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget \
         bc libssl-dev >/dev/null
@@ -106,7 +106,7 @@ function git_clean() {
 
 pre_install_rpm
 pre_install_golang
-git_clean
+# git_clean
 up_config
 pre_build
 do_build
