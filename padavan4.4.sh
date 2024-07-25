@@ -6,7 +6,7 @@ export TNAME="R2100"
 path=$(pwd)
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
-function pre_install_rpm() {
+pre_install_rpm() {
     echo "start to install package"
     sudo apt-get update >/dev/null
     # python-docutils 是推荐安装的依赖，但测试了几台机器没这个包，就默认不装了
@@ -16,8 +16,8 @@ function pre_install_rpm() {
         bc libssl-dev >/dev/null
 }
 
-function pre_install_golang() {
-    if [[ ! -f /usr/local/go/bin/go ]]; then
+pre_install_golang() {
+    if [ ! -f /usr/local/go/bin/go ]; then
         cd /opt
         wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
         tar -C /usr/local -zxf go1.22.4.linux-amd64.tar.gz
@@ -30,7 +30,7 @@ function pre_install_golang() {
     fi
 }
 
-function up_config() {
+up_config() {
     cd ${path}/trunk
     config_path=configs/templates/${TNAME}.config
     sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' ${config_path} #删除配置项MENTOHUST
@@ -67,21 +67,29 @@ function up_config() {
     cp -f ${config_path} .config
     cat .config | grep -v "#CONFIG" | grep "=y" >/tmp/build.config
     # 修改storage大小
-    sed -i '/size_etc/s/6M/60M/g' user/scripts/dev_init.sh
+    init_path='user/scripts/dev_init.sh'
+    if [ -f user/scripts/files/sbin/dev_init.sh ]; then
+        init_path='user/scripts/files/sbin/dev_init.sh'
+    fi
+    sed -i '/size_etc/s/6M/60M/g' ${init_path}
     #### 替换谷歌dns为腾讯dns
-    sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' user/rc/net_wan.c
+    wan_path='user/rc/net_wan.c'
+    if [ -f user/rc/src/net_wan.c ]; then
+        wan_path='user/rc/src/net_wan.c'
+    fi
+    sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' ${wan_path}
 }
 
-function pre_build() {
-    if [[ -f ${path}/toolchain-mipsel/dl_toolchain.sh ]]; then
+pre_build() {
+    if [ -f ${path}/toolchain-mipsel/dl_toolchain.sh ]; then
         cd ${path}/toolchain-mipsel
         ./dl_toolchain.sh
     fi
 }
 
-function do_build() {
+do_build() {
     cd ${path}/trunk
-    if [[ -f ./build_firmware_modify ]]; then
+    if [ -f ./build_firmware_modify ]; then
         ./build_firmware_modify ${TNAME} 0
     else
         cd ..
@@ -89,14 +97,14 @@ function do_build() {
     fi
 }
 
-function aft_build() {
+aft_build() {
     cp -f ${path}/trunk/images/${TNAME}* /opt/
     end_time=$(date "+%Y-%m-%d %H:%M:%S")
     echo $start_time
     echo $end_time
 }
 
-function git_clean() {
+git_clean() {
     cd ${path}/trunk
     git restore --staged ./
     git checkout ./
