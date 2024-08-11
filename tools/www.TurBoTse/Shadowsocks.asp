@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<title>
 		<#Web_Title#> - <#menu5_16#>
@@ -44,7 +43,7 @@
 			init_itoggle('ss_update_chnroute');
 			init_itoggle('ss_update_gfwlist');
 			init_itoggle('ss_adblock');
-			init_itoggle('ss_turn');
+			init_itoggle('ss_adblock_url');
 			init_itoggle('socks5_enable');
 			init_itoggle('ss_schedule_enable', change_on);
 			$j("#tab_ss_cfg, #tab_ss_add, #tab_ss_dlink, #tab_ss_ssl, #tab_ss_cli, #tab_ss_log, #tab_ss_help").click(
@@ -100,6 +99,13 @@
 			}
 			});
 		});
+function ClearssrplusLog(){
+	var $j = jQuery.noConflict();
+	$j.post('/apply.cgi',
+	{
+		'action_mode': ' ClearssrplusLog ',
+	});
+}
 function ctime() {
 var t=0;
 c=null;
@@ -124,10 +130,10 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 			fill_dns2tcp_status(dns2tcp_status());
 			fill_dnsproxy_status(dnsproxy_status());
 			var wan0_dns = '<% nvram_get_x("","wan0_dns"); %>';
-			if (wan0_dns.length > 0){ // use local DNS
+			// use local DNS
+			if (wan0_dns.length > 0){
 					$j("select[name='china_dns']").prepend($j('<option value="'+wan0_dns+'" selected>本地DNS ' + wan0_dns + '</option>'));
 			}
-
 			$("chnroute_count").innerHTML = '<#menu5_17_3#>' + chnroute_count();
 			$("gfwlist_count").innerHTML = '<#menu5_17_3#>' + gfwlist_count();
 			switch_ss_type();
@@ -485,7 +491,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 						sortName: 'ids',
 						sortOrder: "desc",
 						sidePagination: 'client',
-						pageSize: 15,
+						pageSize: 25,
 						pageList: [15, 25, 35, 50], // 分页显示记录数
 						uniqueId: "ids",
 						ajax:function(request) {
@@ -496,7 +502,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 							request.success({
 							  row : data
 							});
-							//显示节点下拉列表 by 花妆男
+					//显示节点下拉列表 by 花妆男
 					// 渲染父节点  obj 需要渲染的数据 keyStr key需要去除的字符串
 					var keyStr = "ssconf_basic_json_";
 					var nodeList = document.getElementById("nodeList"); // 获取TCP节点
@@ -860,7 +866,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					alert("删除失败,请重试！")
 				},
 				success: function (response) {
-					setTimeout("dtime();$j('#table99').bootstrapTable('refresh');document.getElementById('btn_del_link').value='批量删除节点';",1000);
+					setTimeout("dtime();$j('#table99').bootstrapTable('refresh');document.getElementById('btn_del_link').value='删除节点';",1000);
 				}
 			});
 		}
@@ -894,7 +900,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 		ctime();
 			var ns = {};
 			ns[1] = "allping";
-			document.getElementById("btn_aping_link").value="正在ping全部节点";
+			document.getElementById("btn_aping_link").value="正在ping节点";
 			$j.ajax({
 				url: "/applydb.cgi?useping=1&p=ss",
 				type: 'POST',
@@ -905,7 +911,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					alert("脚本执行失败！！！")
 				},
 				success: function (response) {
-					setTimeout("dtime();$j('#table99').bootstrapTable('refresh');document.getElementById('btn_aping_link').value='ping全部节点';",2000);
+					setTimeout("dtime();$j('#table99').bootstrapTable('refresh');document.getElementById('btn_aping_link').value='ping全部';",2000);
 				}
 			});
 		}
@@ -974,7 +980,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 			var s = document.getElementById(urlname + '-status');
 			if (!s)
 				return false;
-			var ssrurl = prompt("在这里黏贴配置链接 ssr:// | ss:// | vmess:// | vless:// | trojan://", "");
+			var ssrurl = prompt("在这里粘贴配置链接 ssr:// | ss:// | vmess:// | vless:// | trojan://", "");
 			if (ssrurl == null || ssrurl == "") {
 				s.innerHTML = "<font color='red'>用户取消</font>";
 				return false;
@@ -1233,7 +1239,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					document.getElementById('v2_h2_path').value = queryParam.path;
 				}
 
-				if (queryParam.security == "xtls") {
+				if (queryParam.security == "xtls" || queryParam.security == "reality") {
 					document.getElementById('v2_tls').value = '2';
 					if (queryParam.flow != undefined) {
 					    if(queryParam.flow == 'xtls-rprx-direct'){
@@ -1241,6 +1247,9 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					    }
 					    else if(queryParam.flow == 'xtls-rprx-splice'){
 					    	document.getElementById('v2_flow').value = '2';
+					    }
+						else if(queryParam.flow == 'xtls-rprx-vision'){
+					    	document.getElementById('v2_flow').value = '3';
 					    }
 					    else
 					    {
@@ -1553,28 +1562,16 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 						<div class="row-fluid">
 							<div class="span12">
 								<div class="box well grad_colour_dark_blue">
-									<h2 class="box_head round_top"><#menu5_16#> - ShadowSocksR Plus</h2>
+									<h2 class="box_head round_top"><#menu5_16#> - ShadowSocksR Plus+</h2>
 									<div class="round_bottom">
 										<div>
 											<ul class="nav nav-tabs" style="margin-bottom: 10px;">
-												<li class="active">
-													<a id="tab_ss_cfg" href="#cfg">客户端</a>
-												</li>
-												<li>
-													<a id="tab_ss_add" href="#add">节点管理</a>
-												</li>
-												<li>
-													<a id="tab_ss_ssl" href="#ssl">高级设置</a>
-												</li>
-												<li>
-													<a id="tab_ss_cli" href="#cli">规则管理</a>
-												</li>
-												<li>
-													<a id="tab_ss_log" href="#log">运行日志</a>
-												</li>
-												<li>
-													<a id="tab_ss_help" href="#help">帮助文档</a>
-												</li>
+												<li class="active"><a id="tab_ss_cfg" href="#cfg">客户端</a></li>
+												<li><a id="tab_ss_add" href="#add">节点管理</a></li>
+												<li><a id="tab_ss_ssl" href="#ssl">高级设置</a></li>
+												<li><a id="tab_ss_cli" href="#cli">规则管理</a></li>
+												<li><a id="tab_ss_log" href="#log">运行日志</a></li>
+												<li><a id="tab_ss_help" href="#help">帮助文档</a></li>
 											</ul>
 										</div>
 										<div class="row-fluid">
@@ -1582,54 +1579,16 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 											<div id="wnd_ss_cfg">
 												<div class="alert alert-info" style="margin: 10px;">一个兼容Shadowsocks、ShadowsocksR 、Vmess、Vless、Trojan、Sock5协议的游戏加速工具。
 													<div><span style="color:#E53333;">注意:</span></div>
-													<div><span style="color:#E53333;">若被编辑的节点正在运行使用，请完成后点击“应用设置”更新节点信息并重连</span></div>
-													<div><span style="color:#E53333;">运行状态不会实时更新，启动节点后需等待一段时间手动 <input type="button" id="btn_reconnect" class="btn btn-info" value="刷新页面" onclick="window.location.reload();" tabindex="1"> 获取运行状态</span></div>
+													<div><span style="color:#E53333;">若被编辑的节点正在运行使用，请完成后点击“应用设置”更新节点信息并"重连"</span></div>
+													<div><span style="color:#E53333;">运行状态不会实时更新，启动程序后需等待一段时间后点击"刷新"获取运行状态</span></div>
 												</div>
 												<table width="100%" cellpadding="4" cellspacing="0" class="table">
-													<tr>
-														<th width="50%"><#Client#> <#running_status#>
-														</th>
-														<td id="ss_status"></td>
-													</tr>
-													<tr>
-														<th width="50%">国内IP
-														</th>
-														<td id="domestic_ip"></td>
-													</tr>
-													<tr>
-														<th width="50%">
-															国外IP
-														</th>
-														<td id="foreign_ip"></td>
-													</tr>
-													<tr>
-														<th width="50%">
-															谷歌访问
-														</th>
-														<td id="gg_status"></td>
-													</tr>
-													<tr id="row_pdnsd_run">
-														<th width="50%"><#Dns2tcp#> <#running_status#></th>
-														<td id="dns2tcp_status"></td>
-													</tr>
-													<tr id="row_dnsproxy_run">
-														<th width="50%">dnsproxy<#running_status#>
-														</th>
-														<td id="dnsproxy_status"></td>
-													</tr>
-													<tr>
-														<th width="50%"><#InetControl#></th>
-														<td>
-															<input type="button" id="btn_reconnect" class="btn btn-info" value="<#Connect#>" onclick="submitInternet('Reconnect');">
-														</td>
-													</tr>
 													<tr>
 														<th width="50%"><#Main_Switch#></th>
 														<td>
 															<div class="main_itoggle">
 																<div id="ss_enable_on_of">
-																	<input type="checkbox" id="ss_enable_fake"
-																		<% nvram_match_x("", "ss_enable", "1", "value=1 checked"); %><% nvram_match_x("", "ss_enable", "0", "value=0"); %>>
+																	<input type="checkbox" id="ss_enable_fake" <% nvram_match_x("", "ss_enable", "1", "value=1 checked"); %><% nvram_match_x("", "ss_enable", "0", "value=0"); %>>
 																</div>
 															</div>
 															<div style="position: absolute; margin-left: -10000px;">
@@ -1639,7 +1598,37 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">主服务器:</th>
+														<th width="50%"><#InetControl#></th>
+														<td>
+															<input type="button" id="btn_reconnect" class="btn btn-info" value="<#Connect#>" onclick="submitInternet('Reconnect');">
+														</td>
+													</tr>
+													<tr>
+														<th width="50%"><#Client#> <#running_status#>：</th>
+														<td id="ss_status"></td>
+													</tr>
+													<tr id="row_pdnsd_run">
+														<th width="50%"><#Dns2tcp#> <#running_status#>：</th>
+														<td id="dns2tcp_status"></td>
+													</tr>
+													<tr id="row_dnsproxy_run">
+														<th width="50%">dnsproxy <#running_status#>：</th>
+														<td id="dnsproxy_status"></td>
+													</tr>
+													<tr>
+														<th width="50%">Google 访问状态：</th>
+														<td id="gg_status"></td>
+													</tr>
+													<tr>
+														<th width="50%">国内IP：</th>
+														<td id="domestic_ip"></td>
+													</tr>
+													<tr>
+														<th width="50%">国外IP：</th>
+														<td id="foreign_ip"></td>
+													</tr>
+													<tr>
+														<th width="50%">主服务器：</th>
 														<td>
 															<select name="global_server" id="nodeList" style="width: 200px;" onchange="showsdlinkList()">
 																<option value="nil">停用</option>
@@ -1647,7 +1636,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">游戏UDP中继服务器:</th>
+														<th width="50%">游戏UDP中继服务器：</th>
 														<td>
 															<select name="udp_relay_server" id="u_nodeList" style="width: 200px;" onchange="showsudlinkList()">
 																<option value="nil">停用</option>
@@ -1656,7 +1645,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">多线程并发转发</th>
+														<th width="50%">多线程并发转发：</th>
 														<td>
 															<select name="ss_threads" class="input" style="width: 200px;">
 																<option value="0">自动（CPU线程数）</option>
@@ -1670,7 +1659,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">运行模式</th>
+														<th width="50%">运行模式：</th>
 														<td>
 															<select name="ss_run_mode" id="ss_run_mode" class="input" style="width: 200px;">
 																<option value="gfw" <% nvram_match_x("","ss_run_mode", "gfw","selected"); %>>gfw列表模式</option>
@@ -1681,7 +1670,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">需要代理的端口</th>
+														<th width="50%">需要代理的端口：</th>
 														<td>
 															<select name="s_dports" class="input" style="width: 200px;">
 																<option value="0" <% nvram_match_x("","s_dports", "0","selected"); %>>所有端口（默认）</option>
@@ -1690,7 +1679,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">内网控制</th>
+														<th width="50%">内网IP控制：</th>
 														<td>
 															<select name="lan_con" class="input" style="width: 200px;">
 																<option value="0">全部走代理</option>
@@ -1699,7 +1688,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr id="row_pdnsd_enable">
-														<th width="50%">DNS解析方式(推荐dnsproxy)</th>
+														<th width="50%">DNS代理解析方式：(推荐dnsproxy)</th>
 														<td>
 															<select name="pdnsd_enable" id="pdnsd_enable" class="input" style="width: 200px;" onchange="switch_dns()">
 																<option value="0">使用dnsproxy查询</option>
@@ -1708,7 +1697,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">加载chinadns-ng(仅绕过模式生效)</th>
+														<th width="50%">加载chinadns-ng：(仅绕过模式生效)</th>
 														<td>
 															<div class="main_itoggle">
 																<div id="ss_chdns_on_of">
@@ -1722,10 +1711,9 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr id="row_china_dns" style="display:none;">
-														<th width="50%">国内DNS(仅chinadns-ng生效)</th>
+														<th width="50%">国内DNS：(仅chinadns-ng生效)</th>
 														<td>
 															<select name="china_dns" class="input" style="width: 200px;">
-																<option value="127.0.0.1#6053">SmartDNS 6053 (127.0.0.1)</option>
 																<option value="1.2.4.8#53">CNNIC DNS (1.2.4.8)</option>
 																<option value="223.5.5.5#53">Ali DNS (223.5.5.5)</option>
 																<option value="117.50.11.11#53">One DNS (117.50.11.11)</option>
@@ -1736,10 +1724,9 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr id="row_tunnel_forward" style="display:none;">
-														<th width="50%">国外DNS</th>
+														<th width="50%">国外DNS：</th>
 														<td>
 															<select name="tunnel_forward" class="input" style="width: 200px;">
-																<option value="127.0.0.1#7053">SmartDNS 7053 (127.0.0.1)</option>
 																<option value="1.1.1.1#53">Cloudflare DNS (1.1.1.1)</option>
 																<option value="1.0.0.1#53">Cloudflare DNS (1.0.0.1)</option>
 																<option value="4.2.2.1#53">Level 3 Public DNS (4.2.2.1)</option>
@@ -1779,83 +1766,71 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 											<!--节点列表-->
 											<div id="wnd_ss_add">
 												<table width="100%" cellpadding="4" cellspacing="0" class="table">
+													<div class="alert alert-info" style="margin: 10px;"> 添加完节点地址后，请先点击上方的 “应用” 再点击 “更新节点” 按钮更新所订阅的节点。</div>
 													<tr>
 														<td colspan="3">
-															<i class="icon-hand-right"></i> <a href="javascript:spoiler_toggle('script7')"><span>点击输入订阅地址：(一行一个地址)</span></a>
+															<i class="icon-hand-right"></i> <a href="javascript:spoiler_toggle('script7')"><span>点击输入节点订阅地址：(一行一个地址)</span></a>
 															<div id="script7" style="display: none">
 																<textarea rows="8" wrap="off" spellcheck="false" maxlength="314571" class="span12" name="scripts.ss_dlink.sh" style="font-family:'Courier New'; font-size:12px;"><% nvram_dump("scripts.ss_dlink.sh",""); %></textarea>
 															</div>
 														</td>
 													</tr>
-													<tr>
-														<th colspan="2" style="background-color: #E3E3E3;">
-															<input name="button" type="button" class="btn btn-primary" onclick="applyRule();" value="保存订阅" />
-															<input type="button" id="btn_update_link" class="btn btn-info" value="更新订阅" onclick="dlink();">
-															<input type="button" id="btn_rest_link" class="btn btn-danger" value="清空节点" onclick="ddlink();"><br />
-															<br>添加完地址请先点击一下保存订阅按钮,再点击更新订阅按钮。
-														</th>
-													</tr>
-												</table>
-												<table width="100%" cellpadding="4" cellspacing="0" class="table">
-													<tr><th width="50%"><#Keyword_filter#></th>
-														<td>
-															<input type="input" name="ss_keyword" id="ss_keyword" value="<% nvram_get_x("", "ss_keyword"); %>" >
-															<br> 命中关键字的节点将被丢弃。多个关键字用 / 分隔
-														</td>
-													</tr>
-													<tr id="ss_schedule_enable_tr" width="50%">
-														<th width="50%"><#ss_schedule_enable_tr#></th>
+													<tr id="ss_schedule_enable_tr">
+														<th width="50%" style="border-top: 0 none;"><#ss_schedule_enable_tr#></th>
 														<td>
 															<div class="main_itoggle">
 																<div id="ss_schedule_enable_on_of">
-																	<input type="checkbox" id="ss_schedule_enable_fake"<% nvram_match_x("", "ss_schedule_enable", "1", "value=1 checked"); %><% nvram_match_x("", "ss_schedule_enable", "0", "value=0"); %>>
+																	<input type="checkbox" id="ss_schedule_enable_fake" <% nvram_match_x("", "ss_schedule_enable", "1", "value=1 checked"); %><% nvram_match_x("", "ss_schedule_enable", "0", "value=0"); %>>
 																</div>
 															</div>
 															<div style="position: absolute; margin-left: -10000px;">
-																<input type="radio" name="ss_schedule_enable_x" id="ss_schedule_enable_1" class="input" value="1" <% nvram_match_x("", "ss_schedule_enable", "1", "checked"); %> /><#checkbox_Yes#>
-																<input type="radio" name="ss_schedule_enable_x" id="ss_schedule_enable_0" class="input" value="0" <% nvram_match_x("", "ss_schedule_enable", "0", "checked"); %> /><#checkbox_No#>
+																<input type="radio" name="ss_schedule_enable_x" id="ss_schedule_enable_1" class="input" value="1" <% nvram_match_x("", "ss_schedule_enable", "1", "checked"); %>/><#checkbox_Yes#>
+																<input type="radio" name="ss_schedule_enable_x" id="ss_schedule_enable_0" class="input" value="0" <% nvram_match_x("", "ss_schedule_enable", "0", "checked"); %>/><#checkbox_No#>
 															</div>
 														</td>
 													</tr>
 													<tr id="ss_schedule_date_tr">
 														<th width="50%"><#ss_schedule_date_tr#></th>
 														<td>
-															<input type="checkbox" name="ss_date_x_Sun" class="input" onclick="check_Timefield_checkbox();"><#WF_Sun#>
-															<input type="checkbox" name="ss_date_x_Mon" class="input" onclick="check_Timefield_checkbox();"><#WF_Mon#>
-															<input type="checkbox" name="ss_date_x_Tue" class="input" onclick="check_Timefield_checkbox();"><#WF_Tue#>
-															<input type="checkbox" name="ss_date_x_Wed" class="input" onclick="check_Timefield_checkbox();"><#WF_Wed#>
-															<input type="checkbox" name="ss_date_x_Thu" class="input" onclick="check_Timefield_checkbox();"><#WF_Thu#>
-															<input type="checkbox" name="ss_date_x_Fri" class="input" onclick="check_Timefield_checkbox();"><#WF_Fri#>
-															<input type="checkbox" name="ss_date_x_Sat" class="input" onclick="check_Timefield_checkbox();"><#WF_Sat#>
+															<div class="controls">
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Mon" onChange="check_Timefield_checkbox();"/><#DAY_Mon#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Tue" onChange="check_Timefield_checkbox();"/><#DAY_Tue#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Wed" onChange="check_Timefield_checkbox();"/><#DAY_Wed#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Thu" onChange="check_Timefield_checkbox();"/><#DAY_Thu#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Fri" onChange="check_Timefield_checkbox();"/><#DAY_Fri#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Sat" onChange="check_Timefield_checkbox();"/><#DAY_Sat#></label>
+																<label class="checkbox inline"><input type="checkbox" class="input" name="ss_date_x_Sun" onChange="check_Timefield_checkbox();"/><#DAY_Sun#></label>
+															</div>
 														</td>
 													</tr>
 													<tr id="ss_schedule_time_tr">
-														<th width="50%"><#ss_schedule_time_tr#></th>
+														<th style="border-top: 0 none;"><#ss_schedule_time_tr#></th>
 														<td>
-															<input type="text" maxlength="2" class="input_3_table" style="width: 30px" name="ss_time_x_hour" onKeyPress="return validator.isNumber(this,event);" onblur="validator.timeRange(this, 0);" autocorrect="off" autocapitalize="off"><#Hour#>:
-															<input type="text" maxlength="2" class="input_3_table" style="width: 30px" name="ss_time_x_min" onKeyPress="return validator.isNumber(this,event);" onblur="validator.timeRange(this, 1);" autocorrect="off" autocapitalize="off"><#Minute#>
+															<input type="text" maxlength="2" style="width: 20px;" size="2" name="ss_time_x_hour" onKeyPress="return validator.isNumber(this,event);" onblur="validator.timeRange(this, 0);" autocorrect="off" autocapitalize="off"><#Hour#>:
+															<input type="text" maxlength="2" style="width: 20px;" size="2" name="ss_time_x_min" onKeyPress="return validator.isNumber(this,event);" onblur="validator.timeRange(this, 1);" autocorrect="off" autocapitalize="off"><#Minute#>
+														</td>
+													</tr>
+													<tr><th width="50%"><#Keyword_filter#></th>
+														<td>
+															<input type="input" name="ss_keyword" id="ss_keyword" value="<% nvram_get_x("", "ss_keyword"); %>" >
+															<br> 命中关键字的节点将被丢弃，多个关键字用 / 分隔
 														</td>
 													</tr>
 												</table>
-												<table class="table">
+												<table width="100%" cellpadding="4" cellspacing="0" class="table">
 													<tr>
-														<td style="border: 0 none; padding: 0px;">
-															<center><input name="button" type="button" class="btn btn-primary" style="width: 200px" onclick="applyRule();" value="<#CTL_apply#>" /></center>
-														</td>
-													</tr>
-												</table>
-												<table>
-													<tr>
-														<th colspan="2" style="background-color: #E3E3E3;">
+														<th colspan="2">
 															<select name="ss_list_mode" style="display: none" id="ss_list_mode" class="input" style="width: 100px;">
 																<option value="a">全部节点</option>
 																<option value="d">自定义节点</option>
 																<option value="c">订阅节点</option>
 															</select>
-															<input type="button" id="btn_add_link" class="btn btn-info" value="添加/导入节点">
-															<input type="button" id="btn_ping_link" class="btn btn-info" value="ping节点">
-															<input type="button" id="btn_aping_link" class="btn btn-info" value="ping全部节点">
-															<input type="button" id="btn_del_link" class="btn btn-danger" value="批量删除节点">
+															<input type="button" id="btn_add_link" class="btn btn-info" value="添加/导入">
+															<input type="button" id="btn_update_link" class="btn btn-info" value="更新节点" onclick="dlink();">
+															<input type="button" id="btn_ping_link" class="btn btn-info" value="ping所选">
+															<input type="button" id="btn_aping_link" class="btn btn-info" value="ping全部">
+															<input type="button" id="btn_del_link" class="btn btn-danger" value="删除节点">
+															<input type="button" id="btn_rest_link" class="btn btn-danger" value="清空节点" onclick="ddlink();">
 															<input type="button" id="btn_ctime" style="display:none;" class="btn btn-good" value="正在运行脚本:0s" onclick="">
 														</th>
 													</tr>
@@ -1867,13 +1842,13 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															<th id="ss_setting_title" colspan="2" style="background-color: #E3E3E3;">添加/删除/编辑节点</th>
 														</tr>
 														<tr>
-															<th width="50%">导入节点信息:</th>
+															<th width="50%">导入节点信息：</th>
 															<td>
 																<input type="button" class="btn btn-primary" value="点击输入节点URL" onclick="return import_ssr_url(this, '<%=self.option%>', '<%=self.value%>')" /><span id="<%=self.option%>-status"></span>
 															</td>
 														</tr>
 														<tr>
-															<th width="50%">服务器节点类型</th>
+															<th width="50%">服务器节点类型：</th>
 															<td>
 																<select name="ssp_type" id="ssp_type" class="input" style="width: 200px;" onchange="switch_ss_type()">
 																	<option value="ss">SS</option>
@@ -1886,32 +1861,32 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr>
-															<th width="50%">别名:（可选）</th>
+															<th width="50%">别名：（可选）</th>
 															<td>
 																<input type="text" class="input" size="15" name="ssp_name" id="ssp_name" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr>
-															<th width="50%">服务器IP地址</th>
+															<th width="50%">服务器IP地址：</th>
 															<td>
 																<input type="text" class="input" size="15" name="ssp_server" id="ssp_server" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr>
-															<th width="50%">服务器端口</th>
+															<th width="50%">服务器端口：</th>
 															<td>
 																<input type="text" class="input" size="15" name="ssp_prot" id="ssp_prot" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr id="row_ss_password" style="display:none;">
-															<th width="50%">服务器密码</th>
+															<th width="50%">服务器密码：</th>
 															<td>
 																<input type="password" class="input" size="32" name="ss_password" id="ss_password" style="width: 200px" value="" />
 																<button style="margin-left: -5px;" class="btn" type="button" onclick="passwordShowHide('ss_password')"><i class="icon-eye-close"></i></button>
 															</td>
 														</tr>
 														<tr id="row_ss_method" style="display:none;">
-															<th width="50%">加密方式</th>
+															<th width="50%">加密方式：</th>
 															<td>
 																<select name="ss_method" id="ss_method" class="input" style="width: 200px;">
 																	<option value="none">none (ssr only)</option>
@@ -1939,7 +1914,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_ss_protocol" style="display:none;">
-															<th width="50%">协议</th>
+															<th width="50%">协议：</th>
 															<td>
 																<select name="ss_protocol" id="ss_protocol" class="input" style="width: 200px;">
 																	<option value="origin">origin</option>
@@ -1954,26 +1929,26 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_ss_plugin" style="display:none;">
-															<th width="50%">插件</th>
+															<th width="50%">插件：</th>
 															<td>
 																<input type="text" class="input" size="15" name="ss_plugin" id="ss_plugin" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr id="row_ss_plugin_opts" style="display:none;">
-															<th width="50%">插件参数</th>
+															<th width="50%">插件参数：</th>
 															<td>
 																<input type="text" class="input" size="15" name="ss_plugin_opts" id="ss_plugin_opts" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<!--SS参数结束--SSR参数开始-->
 														<tr id="row_ss_protocol_para" style="display:none;">
-															<th width="50%">传输协议参数（可选）</th>
+															<th width="50%">传输协议参数：（可选）</th>
 															<td>
 																<input type="text" class="input" size="15" name="ss_protocol_param" id="ss_protocol_param" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr id="row_ss_obfs" style="display:none;">
-															<th width="50%">混淆</th>
+															<th width="50%">混淆：</th>
 															<td>
 																<select name="ss_obfs" id="ss_obfs" class="input" style="width: 200px;">
 																	<option value="plain">plain</option>
@@ -1985,26 +1960,26 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_ss_obfs_para" style="display:none;">
-															<th width="50%">混淆参数（可选）</th>
+															<th width="50%">混淆参数：（可选）</th>
 															<td>
 																<input type="text" class="input" size="15" name="ss_obfs_param" id="ss_obfs_param" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<!--SSR参数结束-->
 														<tr id="row_s5_enable" style="display:none;">
-															<th width="50%">启用用户名/密码认证</th>
+															<th width="50%">启用用户名/密码认证：</th>
 															<td>
 																<input type="checkbox" name="s5_aut" id="s5_aut" value="0" >
 															</td>
 														</tr>
 														<tr id="row_s5_username" style="display:none;">
-															<th width="50%">用户名</th>
+															<th width="50%">用户名：</th>
 															<td>
 																<input type="password" class="input" size="32" name="s5_username" id="s5_username" style="width: 200px" value="" />
 															</td>
 														</tr>
 														<tr id="row_s5_password" style="display:none;">
-															<th width="50%">密码</th>
+															<th width="50%">密码：</th>
 															<td>
 																<input type="password" class="input" size="32" name="s5_password" id="s5_password" style="width: 200px" value="" />
 																<button style="margin-left: -5px;" class="btn" type="button" onclick="passwordShowHide('s5_password')"><i class="icon-eye-close"></i></button>
@@ -2024,7 +1999,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_v2_security" style="display:none;">
-															<th width="50%">加密</th>
+															<th width="50%">加密：</th>
 															<td>
 																<select name="v2_security" id="v2_security" class="input" style="width: 200px;">
 																	<option value="auto">AUTO</option>
@@ -2036,7 +2011,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_v2_net" style="display:none;">
-															<th width="50%">传输方式</th>
+															<th width="50%">传输方式：</th>
 															<td>
 																<select name="v2_transport" id="v2_transport" class="input" style="width: 200px;" onchange="switch_v2_type()">
 																	<option value="tcp">TCP</option>
@@ -2049,7 +2024,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 															</td>
 														</tr>
 														<tr id="row_v2_type" style="display:none;">
-															<th width="50%">伪装类型</th>
+															<th width="50%">伪装类型：</th>
 															<td>
 																<select id="v2_tcp_guise" name="v2_tcp_guise" class="input" style="width: 200px;display:none;">
 																	<option value="none">未配置</option>
@@ -2204,8 +2179,8 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																	<option value="0">未配置</option>
 																	<option value="1">xtls-rprx-direct</option>
 																	<option value="2">xtls-rprx-splice</option>
+																	<option value="3">xtls-rprx-vision</option>
 																</select>
-
 															</td>
 														</tr>
 														<tr id="row_tj_tls_host" style="display:none;">
@@ -2222,7 +2197,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</tr>
 														<!--
 														<tr>
-															<th width="50%">自动切换类型</th>
+															<th width="50%">自动切换类型：</th>
 															<td>
 																<div class="main_itoggle">
 																<div id="switch_enable_x_0_on_of">
@@ -2252,7 +2227,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														<th colspan="2" style="background-color: #E3E3E3;">进程资源限制</th>
 													</tr>
 													<tr>
-														<th width="50%">启用进程资源限制</th>
+														<th width="50%">启用进程资源限制：</th>
 														<td>
 															<div class="main_itoggle">
 																<div id="ss_cgroups_on_of">
@@ -2266,22 +2241,19 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">CPU 限制</th>
+														<th width="50%">CPU 限制：</th>
 														<td>
 															<input type="text" class="input" size="15" name="ss_cgoups_cpu_s" style="width: 200px" value="<% nvram_get_x("","ss_cgoups_cpu_s"); %>" />
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">内存限制</th>
+														<th width="50%">内存限制：</th>
 														<td>
 															<input type="text" class="input" size="15" name="ss_cgoups_mem_s" style="width: 200px" value="<% nvram_get_x("","ss_cgoups_mem_s"); %>" />
 														</td>
 													</tr>
 													<tr>
-														<th colspan="2" style="background-color: #E3E3E3;">节点故障自动切换设置</th>
-													</tr>
-													<tr>
-														<th width="50%">进程守护</th>
+														<th width="50%">进程守护：</th>
 														<td>
 															<div class="main_itoggle">
 																<div id="ss_watchcat_on_of">
@@ -2293,38 +2265,12 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																<input type="radio" value="0" name="ss_watchcat" id="ss_watchcat_0"<% nvram_match_x("", "ss_watchcat", "0", "checked"); %>><#checkbox_No#>
 															</div>
 														</td>
-													</tr> 
-													<tr>
-														<th width="50%">自动切换</th>
-														<td>
-															<div class="main_itoggle">
-																<div id="ss_turn_on_of">
-																	<input type="checkbox" id="ss_turn_fake" <% nvram_match_x("", "ss_turn", "1", "value=1 checked"); %><% nvram_match_x("", "ss_turn", "0", "value=0"); %>>
-																</div>
-															</div>
-															<div style="position: absolute; margin-left: -10000px;">
-																<input type="radio" value="1" name="ss_turn" id="ss_turn_1" <% nvram_match_x("", "ss_turn", "1", "checked"); %>><#checkbox_Yes#>
-																<input type="radio" value="0" name="ss_turn" id="ss_turn_0" <% nvram_match_x("", "ss_turn", "0", "checked"); %>><#checkbox_No#>
-															</div>
-														</td>
-													</tr>
-													<tr>
-														<th width="50%">自动切换检查周期(秒)</th>
-														<td>
-															<input type="text" class="input" size="15" name="ss_turn_s" style="width: 200px" value="<% nvram_get_x("","ss_turn_s"); %>" />
-														</td>
-													</tr>
-													<tr>
-														<th width="50%">切换检查超时时间(秒)</th>
-														<td>
-															<input type="text" class="input" size="15" name="ss_turn_ss" style="width: 200px" value="<% nvram_get_x("", "ss_turn_ss"); %>">
-														</td>
 													</tr>
 													<tr>
 														<th colspan="2" style="background-color: #E3E3E3;">SOCKS5代理</th>
 													</tr>
 													<tr>
-														<th width="50%">服务器:</th>
+														<th width="50%">服务器：</th>
 														<td>
 															<select name="socks5_enable" id="s5_nodeList" style="width: 200px;" onchange="shows5dlinkList()">
 																<option value="nil">停用</option>
@@ -2333,7 +2279,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<th width="50%">本地端口:</th>
+														<th width="50%">本地端口：</th>
 														<td>
 															<input type="text" class="input" size="15" name="socks5_port" style="width: 200px" value="<% nvram_get_x("", "socks5_port"); %>">
 														</td>
@@ -2490,8 +2436,11 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														</td>
 													</tr>
 													<tr>
-														<td style="text-align: right; padding-bottom: 0px;">
-															<input type="button" onClick="location.href=location.href" value="<#CTL_refresh#>" class="btn btn-primary" style="width: 219px">
+														<td>
+															<center>
+																<input type="button" id="btn_ClearssrplusLog" class="btn btn-info" style="width: 200px" value=<#CTL_clear#> onClick="ClearssrplusLog();">
+																<input type="button" class="btn btn-info" style="width: 200px" value=<#CTL_refresh#> onClick="parent.location.reload();">
+															</center>
 														</td>
 													</tr>
 												</table>
@@ -2514,7 +2463,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														<th width="100%">进程资源限制是为了防止进程占用过多资源导致路由器卡顿或重启,如果你的路由器配置足够,可以适当调高限制值。</th>
 													</tr>
 													<tr>
-														<th width="100%">CPU 限制值为一个大于 2 小于 1024 的整数，表示可以使用的 CPU 百分比，如 512 表示 50%;内存限制值需要带上 M 作为单位, 如 20M 表示可以使用 20M 内存，超出会被内核 OOM Killer 自动 kill。</th>
+														<th width="100%">CPU 限制值为一个大于 2 小于 1024 的整数，表示可以使用的 CPU 百分比，如 512 表示 50%;内存限制值需要带上 M 作为单位,<br/> 如 20M 表示可以使用 20M 内存，超出会被内核 OOM Killer 自动 kill。</th>
 													</tr>
 												</table>
 											</div>
@@ -2532,6 +2481,4 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 		<input type="hidden" name="connect_action" value="">
 	</form>
 </body>
-
 </html>
-

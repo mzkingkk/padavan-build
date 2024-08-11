@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
 set -x
-
+action_for=$1
 export TNAME="R2100"
 path=$(pwd)
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
@@ -66,6 +66,7 @@ up_config() {
     sed -i '/CONFIG_FIRMWARE_MT7621_OC/s/0x312/0x362/g' ${config_path}
     cp -f ${config_path} .config
     cat .config | grep -v "#CONFIG" | grep "=y" >/tmp/build.config
+    cat /tmp/build.config
     # 修改storage大小
     init_path='user/scripts/dev_init.sh'
     if [ -f user/scripts/files/sbin/dev_init.sh ]; then
@@ -112,10 +113,18 @@ git_clean() {
     git status
 }
 
-pre_install_rpm
-pre_install_golang
-# git_clean
-up_config
-pre_build
-do_build
-aft_build
+if [[ "${action_for}" == "install" ]]; then
+    pre_install_rpm
+    pre_install_golang
+elif [[ "${action_for}" == "clean" ]]; then
+    git_clean
+elif [[ "${action_for}" == "config" ]]; then
+    up_config
+elif [[ "${action_for}" == "build" ]]; then
+    pre_build
+    do_build
+    aft_build
+else
+    echo "输入不合法 install|clean|config|build"
+    echo "当前: ${action_for}"
+fi
