@@ -3,7 +3,6 @@ pre_path=$(dirname $0)
 aft_path=./
 action_for=$1
 
-set -x
 upx_min_xray='1.8.17.04'
 
 comm() {
@@ -18,6 +17,11 @@ fun_TurBoTse() {
     cp -arf ${pre_path}/tools/mksquashfs_xz ${aft_path}/trunk/tools/
     cp -arf ${pre_path}/tools/www.TurBoTse/genxrayconfig.lua ${aft_path}/trunk/user/shadowsocks/ss/
     cp -arf ${pre_path}/tools/www.TurBoTse/Shadowsocks.asp ${aft_path}/trunk/user/www/n56u_ribbon_fixed/
+
+    cp -arf ${pre_path}/tools/queue/queue.h ${aft_path}/toolchain/
+    sed -i '/curl/s/curl -fSsL -o/cp -rf $(CT_DIR)\/queue.h/g' ${aft_path}/toolchain/Makefile
+    sed -i '/queue.h/s/sys\/queue.h /sys\/queue.h; /g' ${aft_path}/toolchain/Makefile
+    sed -i '/sourceware.org/d' ${aft_path}/toolchain/Makefile
 }
 
 fun_vb1980() {

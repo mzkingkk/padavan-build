@@ -1,6 +1,5 @@
 #!/usr/bin/bash
 set -e
-set -x
 action_for=$1
 export TNAME="R2100"
 path=$(pwd)

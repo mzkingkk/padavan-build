@@ -1,0 +1,61 @@
+name: build 2024
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+  #  branches:
+  #    - master
+  #  schedule:
+  #    - cron: 0 8 * * 5
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target: [R2100]
+        toolchain: [mipsel-linux-musl]
+    steps:
+      - name: Clone source code
+        run: |
+          git clone --single-branch --depth=1 https://github.com/TurBoTse/padavan.git /opt/rt-n56u
+          git clone --single-branch --depth=1 https://github.com/mzkingkk/padavan-4.4.git /opt/padavan_fix
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.22.4"
+          check-latest: true
+          cache: false
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Prepare
+        run: |
+          sudo apt update
+          sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison xxd fakeroot \
+            cpio gettext automake autopoint texinfo build-essential help2man \
+            pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
+          sudo apt install libtool-bin gperf python3-docutils autopoint gettext ccache
+      - name: Prepare Config
+        run: |
+          cd /opt/rt-n56u
+          chmod +x /opt/padavan_fix/*.sh
+          /opt/padavan_fix/fix.sh TurBoTse
+          /opt/padavan_fix/padavan4.4.sh config
+          /opt/padavan_fix/padavan4.4.sh build
+      - name: Build
+        run: |
+          cd /opt/rt-n56u
+          make ${{ matrix.target }} TOOLCHAIN=${{ matrix.toolchain }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.target }}
+          path: /opt/rt-n56u/trunk/images/*.trx
