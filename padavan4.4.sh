@@ -78,6 +78,7 @@ up_config() {
         wan_path='user/rc/src/net_wan.c'
     fi
     sed -i '/8\.8\.8\.8/s/8\.8\.8\.8/119.29.29.29/g' ${wan_path}
+    find ${path} -iname *.sh | xargs chmod +x
 }
 
 pre_build() {
