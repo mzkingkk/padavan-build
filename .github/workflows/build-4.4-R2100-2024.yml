@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Clone source code
         run: |
-          git clone --single-branch --depth=1 https://github.com/TurBoTse/padavan.git /opt/rt-n56u
+          git clone --single-branch --depth=1 https://github.com/TurBoTse/padavan.git /opt/TurBoTse.padavan
           git clone --single-branch --depth=1 https://github.com/mzkingkk/padavan-build.git /opt/padavan_fix
       - uses: actions/setup-go@v4
         with:
@@ -46,9 +46,10 @@ jobs:
           sudo apt install libtool-bin gperf python3-docutils autopoint gettext ccache
       - name: Prepare Config
         run: |
-          cd /opt/rt-n56u
+          ln -s /opt/TurBoTse.padavan /opt/rt-n56u
+          cd /opt/TurBoTse.padavan
           chmod +x /opt/padavan_fix/*.sh
-          /opt/padavan_fix/fix.sh TurBoTse
+          /opt/padavan_fix/padavan4.4.sh fix
           /opt/padavan_fix/padavan4.4.sh config
           /opt/padavan_fix/padavan4.4.sh build
       - name: Build

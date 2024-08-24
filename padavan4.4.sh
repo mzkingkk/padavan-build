@@ -5,6 +5,8 @@ export TNAME="R2100"
 path=$(pwd)
 start_time=$(date "+%Y-%m-%d %H:%M:%S")
 
+SHELL_FOLDER=$(dirname "$0")
+
 pre_install_rpm() {
     echo "start to install package"
     sudo apt-get update >/dev/null
@@ -106,8 +108,7 @@ aft_build() {
 }
 
 git_clean() {
-    cd ${path}/trunk
-    git restore --staged ./
+    cd ${path}
     git checkout ./
     git clean -dfx
     git status
@@ -120,11 +121,14 @@ elif [[ "${action_for}" == "clean" ]]; then
     git_clean
 elif [[ "${action_for}" == "config" ]]; then
     up_config
+elif [[ "${action_for}" == "fix" ]]; then
+    chmod +x ${SHELL_FOLDER}/*.sh
+    ${SHELL_FOLDER}/fix.sh ${path}
 elif [[ "${action_for}" == "build" ]]; then
     pre_build
     do_build
     aft_build
 else
-    echo "输入不合法 install|clean|config|build"
+    echo "输入不合法 install|clean|fix|config|build"
     echo "当前: ${action_for}"
 fi

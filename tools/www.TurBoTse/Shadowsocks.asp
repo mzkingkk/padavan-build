@@ -1267,7 +1267,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 				}
 				// 补充缺失的配置
 				if (queryParam.security == "reality") {
-					document.getElementById('v2_stream_security').value = 'reality';
+					document.getElementById('v2_tls').value = '3';
 					document.getElementById('v2_stream_reality_fp').value = queryParam.fp;
 					document.getElementById('v2_stream_reality_pbk').value = queryParam.pbk;
 					document.getElementById('v2_stream_reality_sid').value = queryParam.sid;
@@ -1390,7 +1390,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 					flow: document.getElementById("v2_flow").value,
 					tls_host: document.getElementById("ssp_tls_host").value,
 					coustom: "1",
-					stream_security: document.getElementById("v2_stream_security").value,
 					fp: document.getElementById("v2_stream_reality_fp").value,
 					pbk: document.getElementById("v2_stream_reality_pbk").value,
 					sid: document.getElementById("v2_stream_reality_sid").value,
@@ -2137,7 +2136,6 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 														<tr id="row_xray_key" style="display:none;">
 															<th width="50%">streamSettings.security</th>
 															<td>
-																<input type="text" class="input" size="15" id="v2_stream_security" style="width: 200px" value="" />
 																<input type="text" class="input" size="15" id="v2_stream_reality_fp" style="width: 200px" value="" />
 																<input type="text" class="input" size="15" id="v2_stream_reality_pbk" style="width: 200px" value="" />
 																<input type="text" class="input" size="15" id="v2_stream_reality_sid" style="width: 200px" value="" />
@@ -2169,6 +2167,7 @@ setTimeout('document.getElementById("btn_ctime").style.display="none";',1000);
 																	<option value="0">未配置</option>
 																	<option value="1">tls</option>
 																	<option value="2">xtls</option>
+																	<option value="3">reality</option>
 																</select>
 															</td>
 														</tr>

@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 pre_path=$(dirname $0)
-aft_path=./
-action_for=$1
+aft_path=$1
 
 upx_min_xray='1.8.17.04'
 
@@ -19,8 +18,9 @@ fun_TurBoTse() {
     cp -arf ${pre_path}/tools/www.TurBoTse/Shadowsocks.asp ${aft_path}/trunk/user/www/n56u_ribbon_fixed/
 
     cp -arf ${pre_path}/tools/queue/queue.h ${aft_path}/toolchain/
-    sed -i '/curl/s/curl -fSsL -o/cp -rf $(CT_DIR)\/queue.h/g' ${aft_path}/toolchain/Makefile
-    sed -i '/queue.h/s/sys\/queue.h /sys\/queue.h; /g' ${aft_path}/toolchain/Makefile
+    sed -i '/cp -f /d' ${aft_path}/toolchain/Makefile
+    sed -i '/Installing/ a\               cp -f $(TOPDIR)\/queue.h $(TOPDIR)\/toolchain-mipsel\/mipsel-linux-musl\/sysroot\/usr\/include\/sys\/; \\' ${aft_path}/toolchain/Makefile
+    sed -i '/curl -fSsL -o/d' ${aft_path}/toolchain/Makefile
     sed -i '/sourceware.org/d' ${aft_path}/toolchain/Makefile
 }
 
@@ -32,11 +32,11 @@ fun_vb1980() {
     cp -arf ${pre_path}/tools/www.vb1980/genxrayconfig.lua ${aft_path}/trunk/user/shadowsocks/ss/
     cp -arf ${pre_path}/tools/www.vb1980/Shadowsocks.asp ${aft_path}/trunk/user/www/n56u_ribbon_fixed/
 }
-
-if [[ "${action_for}" == "TurBoTse" ]]; then
+echo "path is ${aft_path}"
+if [[ "${aft_path}" =~ "TurBoTse" ]]; then
     comm
     fun_TurBoTse
-elif [[ "${action_for}" == "vb1980" ]]; then
+elif [[ "${aft_path}" =~ "vb1980" ]]; then
     comm
     fun_vb1980
 else

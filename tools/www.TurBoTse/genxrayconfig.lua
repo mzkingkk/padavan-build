@@ -57,7 +57,7 @@ local xray = {
 	-- 底层传输配置
 		streamSettings = {
 			network = server.transport,
-			security = (server.tls == '1') and "tls" or ((server.tls == '2') and "xtls") or ((server.stream_security == 'reality') and "reality") or "none",
+			security = (server.tls == '1') and "tls" or ((server.tls == '2') and "xtls") or ((server.tls == '3') and "reality") or "none",
 			tlsSettings = (server.tls == '1') and 
 			{
 				allowInsecure = (server.insecure ~= "0") and true or false,
@@ -98,7 +98,7 @@ local xray = {
 					Host = server.ws_host
 				} or nil,
 			} or nil,
-			realitySettings = (server.stream_security == 'reality') and (server.sid ~= nil) and {
+			realitySettings = (server.tls == '3') and (server.sid ~= nil) and {
 				fingerprint = server.fp,
 				serverName = server.server,
 				publicKey = server.pbk,
@@ -128,7 +128,7 @@ local xray = {
 	},
 
 	-- 额外传出连接
-	outboundDetour = (server.stream_security ~= 'reality') and {
+	outboundDetour = (server.tls ~= '3') and {
 		{
 			protocol = "freedom",
 			tag = "direct",
