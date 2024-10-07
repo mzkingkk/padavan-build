@@ -44,16 +44,17 @@ jobs:
             cpio gettext automake autopoint texinfo build-essential help2man \
             pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget bc
           sudo apt install libtool-bin gperf python3-docutils autopoint gettext ccache
-      - name: Prepare Config
-        run: |
+
           ln -s /opt/TurBoTse.padavan /opt/rt-n56u
           cd /opt/TurBoTse.padavan
           chmod +x /opt/padavan_fix/*.sh
           /opt/padavan_fix/padavan4.4.sh fix
           /opt/padavan_fix/padavan4.4.sh config
-          /opt/padavan_fix/padavan4.4.sh build
       - name: Build
         run: |
+          cd /opt/TurBoTse.padavan
+          /opt/padavan_fix/padavan4.4.sh build
+
           cd /opt/rt-n56u
           make ${{ matrix.target }} TOOLCHAIN=${{ matrix.toolchain }}
       - uses: actions/upload-artifact@master

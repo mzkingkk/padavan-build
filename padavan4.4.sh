@@ -101,7 +101,7 @@ do_build() {
 }
 
 aft_build() {
-    cp -f ${path}/trunk/images/${TNAME}* /opt/
+    cp -f ${path}/trunk/images/*.trx /opt/
     end_time=$(date "+%Y-%m-%d %H:%M:%S")
     echo $start_time
     echo $end_time
