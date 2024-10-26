@@ -13,7 +13,7 @@ comm() {
 }
 
 fun_TurBoTse() {
-    cp -arf ${pre_path}/tools/mksquashfs_xz ${aft_path}/trunk/tools/
+    # cp -arf ${pre_path}/tools/mksquashfs_xz ${aft_path}/trunk/tools/
     cp -arf ${pre_path}/tools/www.TurBoTse/genxrayconfig.lua ${aft_path}/trunk/user/shadowsocks/ss/
     cp -arf ${pre_path}/tools/www.TurBoTse/Shadowsocks.asp ${aft_path}/trunk/user/www/n56u_ribbon_fixed/
 
