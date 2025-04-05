@@ -20,9 +20,9 @@ pre_install_rpm() {
 pre_install_golang() {
     if [ ! -f /usr/local/go/bin/go ]; then
         cd /opt
-        wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
-        tar -C /usr/local -zxf go1.22.4.linux-amd64.tar.gz
-        rm -rf go1.22.4.linux-amd64.tar.gz
+        wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
+        tar -C /usr/local -zxf go1.24.2.linux-amd64.tar.gz
+        rm -rf go1.24.2.linux-amd64.tar.gz
         sed -i '/GOROOT/d' /etc/profile
         echo -e 'export GOROOT=/usr/local/go' >>/etc/profile
         echo -e 'export PATH=$PATH:$GOROOT/bin' >>/etc/profile
