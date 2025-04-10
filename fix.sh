@@ -22,6 +22,7 @@ fun_TurBoTse() {
     sed -i '/Installing/ a\               cp -f $(TOPDIR)\/queue.h $(TOPDIR)\/toolchain-mipsel\/mipsel-linux-musl\/sysroot\/usr\/include\/sys\/; \\' ${aft_path}/toolchain/Makefile
     sed -i '/curl -fSsL -o/d' ${aft_path}/toolchain/Makefile
     sed -i '/sourceware.org/d' ${aft_path}/toolchain/Makefile
+    sed -i 's/\/$(PKG_VERSION)/\/$(PKG_VERSION)--RELEASE/g' ${aft_path}/trunk/libs/libsodium/Makefile
 }
 
 fun_vb1980() {
